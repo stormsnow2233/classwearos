@@ -57,4 +57,12 @@ dependencies {
     implementation(libs.androidx.wear.compose.foundation)
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.squareup.okhttp3:okhttp:4.11.0") // 用来发请求和监听
+    implementation("androidx.wear.compose:compose-material:1.3.1")
+    implementation("androidx.wear.compose:compose-foundation:1.3.1")
+    implementation("androidx.wear.tiles:tiles:1.3.0")
+    implementation("androidx.wear.protolayout:protolayout:1.1.0")
+    implementation("androidx.wear.protolayout:protolayout-material:1.1.0")
+    implementation("com.google.guava:guava:32.1.3-android") // Tile 异步需要
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.compose.material:material-icons-extended:1.7.2")
 }

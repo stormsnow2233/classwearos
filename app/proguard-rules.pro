@@ -19,3 +19,5 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# 保护课程模型类不被混淆
+-keep class com.storm.classwearos.** { *; }
