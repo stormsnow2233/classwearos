@@ -32,11 +32,10 @@ class SyncService : Service() {
                         val json = JSONObject(file.readText())
                         val now = Calendar.getInstance()
 
-                        // 提前 5 分钟
                         now.add(Calendar.MINUTE, 5)
                         val targetTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(now.time)
 
-                        // 获取今天是周几 (1-7)
+                        // 获取今天是周几
                         var dayNum = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1
                         if (dayNum == 0) dayNum = 7
 
@@ -116,10 +115,8 @@ class SyncService : Service() {
                                 val dataPart = firstLine.substringAfter("data=").substringBefore(" ")
                                 val json = URLDecoder.decode(dataPart, "UTF-8")
 
-                                // 1. 写入文件
                                 File(filesDir, "schedule.json").writeText(json)
 
-                                // 🌟 2. 关键：发送广播通知 MainActivity 更新 UI
                                 val updateIntent = Intent("com.storm.classwearos.UPDATE_UI")
                                 updateIntent.setPackage(packageName) // 确保只发给自己的 APP
                                 sendBroadcast(updateIntent)
@@ -139,7 +136,6 @@ class SyncService : Service() {
     }
 
     companion object {
-        // HTML 部分保持之前的修复版
         private val EDITOR_HTML = """
         <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
         <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css">

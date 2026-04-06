@@ -43,13 +43,10 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.Icon
-import androidx.wear.compose.material3.IconButton
 import androidx.wear.compose.material3.AppScaffold
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Card as Card3
-import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.SwitchButton
-import androidx.wear.compose.material3.CheckboxButton
 import androidx.wear.compose.material3.TextButton
 import org.json.JSONObject
 import java.io.File
@@ -121,7 +118,6 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // --- 网页同步卡片 ---
             Card3(onClick = {}, modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -148,10 +144,8 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // --- 功能设置卡片 ---
             Card3(onClick = {}, modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    // 上课提醒开关
                     SwitchButton(
                         checked = viewModel.reminderEnabled,
                         onCheckedChange = { viewModel.toggleReminder(it) },
@@ -159,8 +153,7 @@ class MainActivity : ComponentActivity() {
                         secondaryLabel = { Text("课前 5 分钟震动提醒") },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    
-                    // 手动刷新按钮
+
                     TextButton(
                         onClick = { viewModel.refreshData() },
                         modifier = Modifier.fillMaxWidth()
@@ -174,13 +167,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            // 底部版本信息
             Spacer(modifier = Modifier.weight(1f))
             Text("Device IP: $deviceIp", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         }
     }
 
-    // 获取 IP 地址的工具函数
     fun getIpAddress(): String {
         try {
             val interfaces = NetworkInterface.getNetworkInterfaces()
@@ -201,7 +192,6 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         var isServiceRunning by remember { mutableStateOf(isServiceRunning(context, SyncService::class.java)) }
 
-        // 🔥 2. 移除这里的 ScreenScaffold，只保留 Column，修复滚轮绿线 BUG 🔥
         Column(
             modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
             verticalArrangement = Arrangement.Center,
@@ -253,7 +243,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // 课表页保留 Scaffold 并且传入 listState，这样右侧滚动条就正常了
         ScreenScaffold(scrollState = listState) {
             ScalingLazyColumn(
                 state = listState,
@@ -276,13 +265,12 @@ class MainActivity : ComponentActivity() {
                             Column {
                                 if (scheduleStatus.currentCourse != null) {
                                     val c = scheduleStatus.currentCourse!!
-                                    Text("📍 正在上课 (已静音)", fontSize = 10.sp, color = Color.White)
+                                    Text("正在上课", fontSize = 10.sp, color = Color.White)
                                     Text(c.name, fontWeight = FontWeight.Bold, color = Color.White)
-                                    // 🔥 3. 显示结束时间 🔥
                                     Text("教室: ${c.room} | 结束: ${c.endTime}", fontSize = 10.sp, color = Color.White)
                                 } else if (scheduleStatus.nextCourse != null) {
                                     val n = scheduleStatus.nextCourse!!
-                                    Text("🕒 下一节预告", fontSize = 10.sp, color = Color.LightGray)
+                                    Text("下一节", fontSize = 10.sp, color = Color.LightGray)
                                     Text(n.name, fontWeight = FontWeight.Bold, color = Color.White)
                                     Text("${n.startTime} - ${n.endTime} | ${n.room}", fontSize = 10.sp, color = Color.White)
                                 }
@@ -314,7 +302,6 @@ class MainActivity : ComponentActivity() {
             title = { Text(course.name, modifier = Modifier.basicMarquee(), maxLines = 1) },
             modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
         ) {
-            // 🔥 4. 课表卡片展示开始和结束时间 🔥
             Text(course.room, color = Color(0xFF7FCFFF), fontSize = 12.sp)
             Text(text = "${course.startTime} - ${course.endTime}", fontSize = 11.sp, fontWeight = FontWeight.Bold)
         }
