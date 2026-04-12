@@ -193,14 +193,12 @@ class SyncService : Service() {
             background: #94a3b8;
         }
 
-        /* 浅色模式下的标签优化 */
         .van-tag--primary {
             background: rgba(0, 180, 216, 0.15) !important;
             color: #0077b6 !important;
             backdrop-filter: blur(4px);
         }
 
-        /* 弹窗背景 */
         .van-popup, .van-action-sheet {
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(20px);
@@ -211,7 +209,7 @@ class SyncService : Service() {
 <div id="app">
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: space-between;">
-            <h2>📱 Class OS</h2>
+            <h2>ClassWear</h2>
             <van-tag round size="large">
                 <span :class="['status-dot', isOnline ? 'status-online' : 'status-offline']"></span>
                 {{ isOnline ? '已连接' : '未连接' }}
@@ -219,17 +217,14 @@ class SyncService : Service() {
         </div>
         <p style="margin:6px 0 0; opacity:0.7; font-size:14px; color: var(--text-secondary);">实时同步 · 轻触编辑</p>
     </div>
-
-    <!-- 工具栏 -->
     <div class="toolbar">
-        <van-button size="small" plain @click="copyToday">📋 复制今日</van-button>
-        <van-button size="small" plain @click="exportData">💾 导出</van-button>
-        <van-button size="small" plain @click="importData">📂 导入</van-button>
-        <van-button size="small" plain @click="checkConflicts">⚠️ 冲突</van-button>
-        <van-button size="small" plain @click="showDefaultSettings = true">⏱️ 默认</van-button>
+        <van-button size="small" plain @click="copyToday">复制今日</van-button>
+        <van-button size="small" plain @click="exportData">导出</van-button>
+        <van-button size="small" plain @click="importData">导入</van-button>
+        <van-button size="small" plain @click="checkConflicts">冲突</van-button>
+        <van-button size="small" plain @click="showDefaultSettings = true">默认</van-button>
     </div>
 
-    <!-- 课表标签页 -->
     <van-tabs v-model:active="activeTab" background="transparent" color="#00b4d8" title-active-color="#0077b6" swipeable>
         <van-tab v-for="day in 7" :title="'周'+'一二三四五六日'[day-1]" :name="String(day)">
             <div v-for="(item, i) in schedule[day]" :key="i" class="card">
@@ -240,7 +235,7 @@ class SyncService : Service() {
                 <van-field v-model="item.name" placeholder="课程名称" label="课程"></van-field>
                 <van-field v-model="item.room" placeholder="教室地点" label="地点"></van-field>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                    <van-tag v-if="hasConflict(day, i)" type="danger" size="medium">⚠️ 时间冲突</van-tag>
+                    <van-tag v-if="hasConflict(day, i)" type="danger" size="medium">时间冲突</van-tag>
                     <van-button size="mini" plain type="danger" @click="schedule[day].splice(i,1)">删除</van-button>
                 </div>
             </div>
@@ -252,7 +247,6 @@ class SyncService : Service() {
 
     <van-button class="save-btn" block round @click="save" :loading="saving">保存并同步到手表</van-button>
 
-    <!-- 复制今日弹窗 -->
     <van-action-sheet v-model:show="showCopySheet" title="复制到星期">
         <div style="padding: 20px;">
             <van-checkbox-group v-model="copyTargetDays" direction="horizontal">
@@ -265,7 +259,6 @@ class SyncService : Service() {
         </div>
     </van-action-sheet>
 
-    <!-- 默认时长设置弹窗 -->
     <van-popup v-model:show="showDefaultSettings" round position="bottom" :style="{ height: '30%' }">
         <div style="padding: 24px;">
             <h4 style="margin-top:0">默认课程时长</h4>
@@ -283,7 +276,6 @@ class SyncService : Service() {
 
 <script>
     const { createApp, ref, reactive } = Vue;
-    // 服务端注入初始数据（若未注入则默认为空对象）
     const LOCAL_DATA = (typeof VAR_LOCAL_DATA !== 'undefined') ? VAR_LOCAL_DATA : {};
 
     const app = createApp({
@@ -298,12 +290,10 @@ class SyncService : Service() {
             const defaultDuration = ref(localStorage.getItem('defaultDuration') || '45');
             const fileInput = ref(null);
 
-            // 初始化数据
             for (let i = 1; i <= 7; i++) {
                 schedule[i] = (LOCAL_DATA[i] || []).map(c => ({ ...c }));
             }
 
-            // 检查手表连接状态
             const checkOnline = async () => {
                 try {
                     const res = await fetch('/ping', { method: 'HEAD', cache: 'no-cache' });
@@ -313,7 +303,6 @@ class SyncService : Service() {
             checkOnline();
             setInterval(checkOnline, 5000);
 
-            // 添加课程（使用默认时长）
             const add = (day) => {
                 const newCourse = { startTime: '08:00', endTime: '', name: '', room: '' };
                 const mins = parseInt(defaultDuration.value) || 45;
@@ -325,7 +314,6 @@ class SyncService : Service() {
                 schedule[day].push(newCourse);
             };
 
-            // 冲突检测（单个课程）
             const hasConflict = (day, index) => {
                 const courses = schedule[day];
                 const c = courses[index];
@@ -339,7 +327,6 @@ class SyncService : Service() {
                 return false;
             };
 
-            // 全局冲突检查
             const checkConflicts = () => {
                 let conflicts = [];
                 for (let d = 1; d <= 7; d++) {
@@ -354,11 +341,10 @@ class SyncService : Service() {
                         confirmButtonText: '知道了'
                     });
                 } else {
-                    vant.showToast({ message: '✅ 没有时间冲突', position: 'top' });
+                    vant.showToast({ message: '没有时间冲突', position: 'top' });
                 }
             };
 
-            // 复制今日
             const copyToday = () => {
                 const today = new Date().getDay() || 7;
                 if (!schedule[today]?.length) {
@@ -380,7 +366,6 @@ class SyncService : Service() {
                 vant.showToast('复制成功');
             };
 
-            // 导出
             const exportData = () => {
                 const dataStr = JSON.stringify(schedule, null, 2);
                 const blob = new Blob([dataStr], { type: 'application/json' });
@@ -392,7 +377,6 @@ class SyncService : Service() {
                 URL.revokeObjectURL(url);
             };
 
-            // 导入
             const importData = () => fileInput.value.click();
             const handleFileImport = (e) => {
                 const file = e.target.files[0];
@@ -411,7 +395,6 @@ class SyncService : Service() {
                 fileInput.value.value = '';
             };
 
-            // 保存
             const save = async () => {
                 saving.value = true;
                 const toast = vant.showLoadingToast({ message: '同步中...', forbidClick: true });
@@ -423,7 +406,6 @@ class SyncService : Service() {
                 finally { toast.close(); saving.value = false; }
             };
 
-            // 默认时长设置
             const setDefaultDuration = () => {
                 localStorage.setItem('defaultDuration', defaultDuration.value);
                 showDefaultSettings.value = false;
