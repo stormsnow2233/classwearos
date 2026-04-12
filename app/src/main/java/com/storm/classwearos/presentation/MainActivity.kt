@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("prefs", Context.MODE_PRIVATE) }
 
-            // 状态：是否显示引导页
             var showOnboarding by remember {
                 mutableStateOf(prefs.getBoolean("first_launch", true))
             }
@@ -62,7 +61,6 @@ class MainActivity : ComponentActivity() {
                 )
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // 1. 主程序逻辑
                     SwipeToDismissBox(
                         state = swipeState,
                         onDismissed = {
@@ -104,14 +102,12 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    // 2. 首次进入的引导层
                     AnimatedVisibility(
                         visible = showOnboarding,
                         enter = fadeIn(),
                         exit = fadeOut() + scaleOut(targetScale = 1.2f)
                     ) {
                         OnboardingOverlay {
-                            // 关闭引导并记录
                             showOnboarding = false
                             prefs.edit().putBoolean("first_launch", false).apply()
                         }
@@ -129,21 +125,19 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// --- 引导页组件 ---
 @Composable
 fun OnboardingOverlay(onDismiss: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.92f)) // 极深的背景增加沉浸感
-            .clickable(enabled = false) {}, // 拦截点击
+            .background(Color.Black.copy(alpha = 0.92f))
+            .clickable(enabled = false) {},
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            // 欢迎图标/Logo
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -156,7 +150,7 @@ fun OnboardingOverlay(onDismiss: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                "欢迎使用 Class OS",
+                "欢迎使用 ClassWear",
                 color = Color.White,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
@@ -174,7 +168,6 @@ fun OnboardingOverlay(onDismiss: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 精致的“我知道了”按钮
             Chip(
                 onClick = onDismiss,
                 label = { Text("开始使用", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
@@ -185,7 +178,6 @@ fun OnboardingOverlay(onDismiss: () -> Unit) {
     }
 }
 
-// --- 主页 ---
 @Composable
 fun HomeScreen(json: JSONObject?, onNav: (String) -> Unit) {
     val now = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
@@ -242,7 +234,6 @@ fun HomeScreen(json: JSONObject?, onNav: (String) -> Unit) {
     }
 }
 
-// --- 周列表 ---
 @Composable
 fun WeeklyListScreen(onBack: () -> Unit, onSelectDay: (String) -> Unit) {
     val days = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
@@ -264,7 +255,6 @@ fun WeeklyListScreen(onBack: () -> Unit, onSelectDay: (String) -> Unit) {
     }
 }
 
-// --- 详情页 ---
 @Composable
 fun DayDetailScreen(day: String, json: JSONObject?, onBack: () -> Unit) {
     val list = mutableListOf<Course>()
@@ -294,7 +284,6 @@ fun DayDetailScreen(day: String, json: JSONObject?, onBack: () -> Unit) {
     }
 }
 
-// --- 设置页 ---
 @Composable
 fun SettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
@@ -327,7 +316,6 @@ fun SettingsScreen(onBack: () -> Unit) {
     }
 }
 
-// --- 通用：半椭圆返回键 ---
 @Composable
 fun BottomReturnArc(onClick: () -> Unit) {
     Box(
@@ -344,7 +332,6 @@ fun BottomReturnArc(onClick: () -> Unit) {
     }
 }
 
-// --- 通用：状态卡片 ---
 @Composable
 fun StatusCard(course: Course, label: String, highlight: Boolean) {
     Card(
